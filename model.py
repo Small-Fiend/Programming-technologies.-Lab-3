@@ -23,14 +23,3 @@ class Message(object):
     #нет 
     def __repr__(self):
         return '{"username": "'+str(self.username)+'", "message": "'+str(self.message)+'", "quit": "'+str(self.quit)+'"}'
-
-#класс для проверки состояний и загрузки/скачивания
-class Action(object):
-
-    def __init__(self, **kwargs):
-        self.load = False
-        self.save = False
-        self.__dict__.update(kwargs)
-
-    def marshal(self):
-        return (json.dumps(self.__dict__) + END_CHARACTER).encode(TARGET_ENCODING)

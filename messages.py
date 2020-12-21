@@ -13,5 +13,4 @@ USERNAME = "Username"
 SERVER = "SERVER"
 WAITING_USER = "Waiting for player"
 SERVER_OVERFLOW = "Server is full, please connect later"
-SAVING_FILE = "File has been successfully saved"
-LOAD_FILE = "File has been successfully loaded"
+

@@ -117,20 +117,8 @@ class Application(object):
             print(messages.CONNECTION_ERROR)
         finally:
             self.client.sock.close()
-    # сохранение json
-    def save_game_to_json(self, fname, save):
-        action = model.Action(save=save)
-        self.client.sock.sendall(action.marshal())
-        with open(fname, 'w') as f:
-            print(self)
-            json.dump(self, f)
-        #json_data = json.loads(data)
-        #print(json_data)
 
-    # загрузка json
-    def load_game_to_json(self, fname, load):
-        action = model.Action(load=load)
-        self.client.sock.sendall(action.marshal())
+    def send_game(self, fname):
         with open(fname, "r") as f:
             data = f.read()
         json_data = json.loads(data)
@@ -144,7 +132,7 @@ class Application(object):
             flag = False
 
         if flag is True:
-            #self.ui.show_message.
-            self.client.sock.sendall((data+model.END_CHARACTER).encode())
+            #self.ui.error_label.pack_forget()
+            self.client.sock.sendall((data + model.END_CHARACTER).encode())
         #else:
             #self.ui.error_label.pack()

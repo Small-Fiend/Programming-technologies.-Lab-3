@@ -69,30 +69,12 @@ class Server(object):
 
             try:
                 message = model.Message(**json.loads(self.receive(client)))
-                action = model.Action(**json.loads(self.receive(client)))
-                print("save", action.save)
-                print("load", action.load)
             except (ConnectionAbortedError, ConnectionResetError):
                 print(CONNECTION_ABORTED)
                 return
             if  message.quit:
                 client.close()
                 self.clients.remove(client)
-                #игра начинает работать после нажатия на кнопку скачать/загрузить.
-                # Когда переставила в конец handle, то падала ошибка в строке 212 - self.sock.bind(("", self.port)). Нет
-                if action.save == True:
-                    print("Save true")
-                    with open("C:\учеба\тп\lab2\Test.json") as json_file:
-                        json_file.write(str(self.game_state))
-                    # action.message = messages.SAVING_FILE
-                    self.broadcast(messages.SAVING_FILE)
-
-                if action.load == True:
-                    print("Load true")
-                    with open("C:\учеба\тп\lab2\Test2.json") as json_file:
-                        data = json_file.read()
-                    self.game_state = json.loads(data)
-                    self.broadcast(messages.LOAD_FILE)
 
                 if (self.game_state.leader.name == message.username and self.game_state.gamer.name is None) \
                         or (self.game_state.gamer.name == message.username and self.game_state.leader.name is None):

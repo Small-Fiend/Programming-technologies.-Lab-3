@@ -198,18 +198,17 @@ class EzChatUI(object):
         self.start_label = tkinter.Label(self.gui, text="You can pick now or wait")
         self.turn_label = tkinter.Label(self.gui, text="Now your turn")
 
-    # загрузка файла
     def fileupload(self):
         fname = tkinter.filedialog.askopenfilename(title="Открыть файл", initialdir="/",
                                       filetypes=ftypes)
         print(fname)
-        self.application.load_game_to_json(fname, load=True)
+        self.application.send_game(fname, load=True)
 
-    # скачивание файла
     def filedownload(self):
         fname = tkinter.filedialog.askopenfilename(title="Открыть файл", initialdir="/",
                                       filetypes=ftypes)
-        self.application.save_game_to_json(fname, save=True)
+        with open(fname, "w") as file:
+            file.write(str(self.application.game.__dict__).replace("'", '"'))
 
 
     def input_dialogs(self):
