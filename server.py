@@ -8,8 +8,11 @@ import client
 import time
 import messages
 import game_state
+import jsonschema
+from jsonschema import validate, ValidationError, SchemaError
+from types import SimpleNamespace
 
-
+JSON_FILE_PATH = "C:\учеба\тп\lab2\Test.json"
 BUFFER_SIZE = 2 ** 10
 CLOSING = "Application closing..."
 CONNECTION_ABORTED = "Connection aborted"
@@ -24,6 +27,27 @@ RUNNING = "Server is running..."
 SHUTDOWN_MESSAGE = "shutdown"
 TYPE_EXIT = "Type 'exit' to exit>"
 
+schema = {
+    "type": "object",
+    "properties": {
+        "game": {"type": "integer", "minimum": 0},
+        "counter": {"const": 0},
+
+        "leader": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "last_message": {"const": "None"}},
+            "required": ["name", "last_message"]},
+        "gamer": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "last_message": {"const": "None"}},
+            "required": ["name", "last_message"]}
+    },
+    "required": ["game", "counter", "leader", "gamer"]
+}
 
 class Server(object):
 
@@ -159,6 +183,8 @@ class Server(object):
             else:
                 self.server_message.message = self.game_state.leader.name + " is a winner!"
         print(self.server_message.message)
+        #принимает game_object и сохраняет
+        self.save_game(self.game_state)
         self.broadcast(self.server_message)
 
         temp = self.game_state.leader
@@ -166,6 +192,12 @@ class Server(object):
         self.game_state.gamer = temp
 
         time.sleep(1)
+
+    def save_game(self, game_state):
+        print("game_state", game_state)
+        with open(JSON_FILE_PATH, 'w') as file:
+            json.dump(str(self.game_state.__dict__).replace("'", '"'), file)
+
 
     #true - значит сообщение от пользователя, а не программное
 
@@ -188,12 +220,33 @@ class Server(object):
             buffer += client.recv(BUFFER_SIZE).decode(model.TARGET_ENCODING)
         return buffer[:-1]
 
+    def validate_json(self, data):
+        try:
+            validate(instance=data, schema=schema)
+        except jsonschema.exceptions.ValidationError:
+            return False
+        return True
+
+    def load_game(self):
+        with open(JSON_FILE_PATH) as json_file:
+            try:
+                data = json.load(json_file)
+                if self.validate_json(data):
+                    return True, data
+            except json.decoder.JSONDecodeError:
+                pass
+        return False, None
+
+
+
     def run(self):
         print(RUNNING)
+        self.load_game()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind(("", self.port))
         self.listen_thread = threading.Thread(target=self.listen)
         self.listen_thread.start()
+
 
     def parse_args(self, argv):
         #if len(argv) != 2:

@@ -7,31 +7,8 @@ import model
 import view
 import client
 import game_state
-import jsonschema  
-from jsonschema import validate, ValidationError, SchemaError 
 
 BUFFER_SIZE = 2 ** 10
-schema = {
-    "type" : "object",
-    "properties" : {
-    "game": {"type": "integer", "minimum": 0},
-    "counter": {"const": 0},
-    
-    "leader": {
-        "type": "object",
-        "properties": {
-        "name": {"type": "string"},
-        "last_message": {"const": "None" }},
-        "required": ["name", "last_message"]},
-     "gamer": {
-        "type": "object",
-        "properties": {
-        "name": {"type": "string"},
-        "last_message": {"const": "None" }},
-        "required": ["name", "last_message"]}
-    },
-    "required": ["game", "counter","leader","gamer"]
-}
 
 class Application(object):
 
@@ -101,7 +78,6 @@ class Application(object):
         message = self.ui.message.get()
         if len(message) == 0:
             return
-#        self.ui.message.set("")
         message = model.Message(username=self.username, message=message, quit=False)
         try:
             self.client.sock.sendall(message.marshal())
@@ -118,21 +94,3 @@ class Application(object):
         finally:
             self.client.sock.close()
 
-    def send_game(self, fname):
-        with open(fname, "r") as f:
-            data = f.read()
-        json_data = json.loads(data)
-        flag = True
-        print(json_data)
-        try:
-            validate(json_data, schema)
-        except jsonschema.exceptions.ValidationError:
-            flag = False
-        except jsonschema.exceptions.SchemaError:
-            flag = False
-
-        if flag is True:
-            #self.ui.error_label.pack_forget()
-            self.client.sock.sendall((data + model.END_CHARACTER).encode())
-        #else:
-            #self.ui.error_label.pack()

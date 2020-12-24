@@ -1,3 +1,1 @@
-message = "Now 2 lead, 1 play"
-i = message.find("Now {} lead".format(1))
-print(i)
+"{'game': 0, 'counter': 0, 'leader': {\"name\": \"1\", \"last_message\": \"y y y y y \"}, 'gamer': {\"name\": \"2\", \"last_message\": \"y y y y y \"}, 'message': {\"username\": \"None\", \"message\": \"None\", \"quit\": \"False\"}}"

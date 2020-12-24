@@ -18,4 +18,4 @@ class Game_st(object):
         self.__dict__.update(kwargs)
 
     def marshal(self):
-        return (json.dumps(self.__dict__) + END_CHARACTER).encode(TARGET_ENCODING)
+        return (json.dumps(self.__dict__)).encode(TARGET_ENCODING)
